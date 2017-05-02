@@ -1,0 +1,109 @@
+# By convention http://www.zytrax.com/books/ldap/apa/oid.html
+# Replace fake oids 1.3.6.1.4.1.99999.99 with your real ones.
+# 1.3.6.1.4.1.99999.99.1 - assign to SNMP objects
+# 1.3.6.1.4.1.99999.99.2 - assign to LDAP objects
+# 1.3.6.1.4.1.99999.99.2.1 - assign to LDAP syntaxes
+# 1.3.6.1.4.1.99999.99.2.2 - assign to LDAP matchingrule
+# 1.3.6.1.4.1.99999.99.2.3 - assign to LDAP attributes
+# 1.3.6.1.4.1.99999.99.2.4 - assign to LDAP objectclasses
+
+
+objectidentifier multitenantSchema 1.3.6.1.4.1.99999.99.2
+# Don't make changes below this line
+###################
+
+
+objectidentifier multitenantAttrs multitenantSchema:3
+objectidentifier multitenantOCs multitenantSchema:4
+
+
+
+# User descriptor
+attributetype ( multitenantAttrs:1
+  NAME 'isActive'
+  DESC 'is active True or False'
+  EQUALITY booleanMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+  SINGLE-VALUE
+ )
+
+attributetype ( multitenantAttrs:2
+  NAME 'uuid'
+  DESC 'uuid'
+  EQUALITY UUIDMatch
+  SYNTAX 1.3.6.1.1.16.1
+  SINGLE-VALUE
+  )
+
+attributetype ( multitenantAttrs:3
+  NAME 'isEnable'
+  DESC 'is enable True or False'
+  SUP isActive
+  )
+
+attributetype ( multitenantAttrs:4
+  NAME 'applicationName'
+  DESC ' multitenant application name'
+  EQUALITY caseIgnoreMatch
+  SUBSTR caseIgnoreSubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE
+  )
+
+attributetype ( multitenantAttrs:5
+  NAME 'applicationUUID'
+  DESC 'multitenant application id'
+  SUP uuid
+  )
+
+attributetype ( multitenantAttrs:6
+  NAME 'applicationOwner'
+  DESC 'multitenant application owner'
+  SUP distinguishedName
+  SINGLE-VALUE
+  )
+
+attributetype ( multitenantAttrs:7
+  NAME 'applicationURL'
+  DESC 'multitenant application url (append applicationID to domain - 4e23be14-1318-1036-83f3-cdd7c8b2ba46.test.com)'
+  SUP labeledURI
+  SINGLE-VALUE
+ )
+
+attributetype ( multitenantAttrs:8
+  NAME 'applicationURLAlias'
+  DESC 'multitenant application url alias (human read-able url - mycompany.test.com)'
+  SUP applicationURL
+  SINGLE-VALUE
+  )
+
+attributetype ( multitenantAttrs:9
+  NAME 'iduser'
+  DESC 'user id'
+  EQUALITY caseIgnoreMatch
+  SUBSTR caseIgnoreSubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE
+  )
+
+objectClass ( multitenantOCs:1
+  NAME 'multitenantUserDescriptor'
+  DESC 'multitenant user descriptor'
+  SUP top STRUCTURAL
+  MUST ( userPassword $ iduser $ isActive $ uuid)
+  MAY email )
+
+objectClass ( multitenantOCs:2
+  NAME 'multitenantRootUserDescriptor'
+  DESC 'multitenant root user descriptor'
+  SUP top STRUCTURAL
+  MUST ( userPassword $ isActive $ uuid $ email))
+
+objectClass ( multitenantOCs:3
+  NAME 'multitenantApplicationDescriptor'
+  DESC 'multitenant application descriptor'
+  SUP top STRUCTURAL
+  MUST ( applicationUUID $ applicationName $ applicationOwner $ applicationURL $ applicationURLAlias $ isEnable))
+
+
+
