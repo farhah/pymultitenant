@@ -1,6 +1,5 @@
 # pymultitenant
 
-<<<<<<< HEAD
 The idea is to make multitenancy in python using ldap3 https://github.com/cannatag/ldap3
 
 
