@@ -1,0 +1,5 @@
+dn: olcDatabase={1}hdb,cn=config
+delete: olcAccess
+olcAccess: {0}to attrs=userPassword by self write by anonymous auth by * none
+olcAccess: {1}to attrs=shadowLastChange by self write by * read
+olcAccess: {2}to * by * read
