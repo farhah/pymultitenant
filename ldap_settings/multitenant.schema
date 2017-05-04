@@ -86,6 +86,12 @@ attributetype ( multitenantAttrs:9
   SINGLE-VALUE
   )
 
+attributetype ( multitenantAttrs:10
+  NAME 'listAppUUID'
+  DESC 'list of application uuid owned by this user'
+  SUP distinguishedName
+  )
+
 objectClass ( multitenantOCs:1
   NAME 'multitenantUserDescriptor'
   DESC 'multitenant user descriptor'
@@ -97,13 +103,14 @@ objectClass ( multitenantOCs:2
   NAME 'multitenantRootUserDescriptor'
   DESC 'multitenant root user descriptor'
   SUP top STRUCTURAL
-  MUST ( userPassword $ isActive $ uuid $ email))
+  MUST ( userPassword $ isActive $ uuid $ email)
+  MAY listAppUUID )
 
 objectClass ( multitenantOCs:3
   NAME 'multitenantApplicationDescriptor'
   DESC 'multitenant application descriptor'
   SUP top STRUCTURAL
-  MUST ( applicationUUID $ applicationName $ applicationOwner $ applicationURL $ applicationURLAlias $ isEnable))
+  MUST ( applicationUUID $ applicationName $ applicationURL $ applicationURLAlias $ isEnable))
 
 
 

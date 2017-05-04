@@ -4,11 +4,10 @@ add: olcAccess
 olcAccess: {0}to attrs=userPassword,shadowLastChange by self write by anonymous auth by dn="cn=admin,dc=ldapserver,dc=io" write by * none
 -
 add: olcAccess
-olcAccess: {1}to * by dn.exact=gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth manage by * break
+olcAccess: {1}to attrs=uuid,applicationUUID,applicationURL,cn,objectClass by dn="cn=admin,dc=ldapserver,dc=io" write by self none by anonymous none by * none
 -
 add: olcAccess
-olcAccess: {2}to attrs=uuid,applicationUUID,applicationURL,cn,objectClass by dn="cn=admin,dc=ldapserver,dc=io" write by self none by anonymous none by * none
+olcAccess: {2}to dn.regex="(.+,)?(email=[^,]+,ou=container,ou=multitenant,dc=ldapserver,dc=io)$" by dn.exact,expand="$2" write by dn="cn=admin,dc=ldapserver,dc=io" write by * none
 -
 add: olcAccess
-olcAccess: {3}to dn.regex="(.+,)?(email=[^,]+,ou=container,ou=multitenant,dc=ldapserver,dc=io)$" by dn.exact,expand="$2" write by dn="cn=admin,dc=ldapserver,dc=io" write by * none
-
+olcAccess: {3}to dn.regex="(.+,)?(applicationUUID=[^,]+,ou=container,ou=multitenant,dc=ldapserver,dc=io)$" by group.expand="cn=root,ou=groups,$1" write by dn="cn=admin,dc=ldapserver,dc=io" write by * none

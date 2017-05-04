@@ -1,0 +1,6 @@
+dn: ou=multitenant,dc=ldapserver,dc=io
+objectClass: organizationalUnit
+
+
+dn: ou=container,ou=multitenant,dc=ldapserver,dc=io
+objectClass: organizationalUnit
