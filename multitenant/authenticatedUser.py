@@ -7,9 +7,7 @@ class AuthenticatedUser(UserDescriptor):
 
     def __init__(self, response):
         attrs = prepare_user(response)
-        print(attrs)
         super(AuthenticatedUser, self).__init__(attrs)
-        self.__groups = None
         # server_conn, bind = server()
         # with Connection(server_conn, settings.ADMINISTRATOR, settings.PASSWORD, auto_bind=bind, client_strategy=REUSABLE) as conn:
         #     if self.is_owner:
@@ -36,41 +34,41 @@ class AuthenticatedUser(UserDescriptor):
 
     @property
     def is_root(self):
-        self.__is_root
+        if 'root' in self.groups:
+            return True
+        return False
 
-    @is_root.setter
-    def is_root(self, root=None):
-        self.__is_root = root
-        return self.__is_root
-
-    @property
-    def groups(self):
-        return self.__groups
-
-    @groups.setter
-    def groups(self, group_attrs=None):
-        if self.is_owner:
-            self.__groups = settings.TENANT_GROUPS
-
-        else:
-            if group_attrs is None:
-                raise Exception('Group attributes is empty.')
-            groups = list_groups(group_attrs)
-            self.__groups = groups
+    #
+    # @property
+    # def groups(self):
+    #     return self.groups
+    #
+    # @groups.setter
+    # def groups(self, group_attrs=None):
+    #     # if self.is_owner:
+    #     #     self.__groups = settings.TENANT_GROUPS
+    #
+    #     # else:
+    #     #     if group_attrs is None:
+    #     #         raise Exception('Group attributes is empty.')
+    #     #     groups = list_groups(group_attrs)
+    #     #     self.__groups = groups
+    #     pass
 
     def has_group(self, group_name):
-        """
-        at user creation lower groups are automatically assigned to user.
-        if admin, automatically has marketer and pointattendent
-        if superuser, has admin
-        if root has all.
-        :param group_name: a str of group name
-        :return:
-        """
-        for group in self.groups:
-            if group.name == group_name:
-                return True
-        return False
+        # """
+        # at user creation lower groups are automatically assigned to user.
+        # if admin, automatically has
+        # if superuser, has admin
+        # if root has all.
+        # :param group_name: a str of group name
+        # :return:
+        # """
+        # for group in self.groups:
+        #     if group.name == group_name:
+        #         return True
+        # return False
+        pass
 
 
 class Authenticated(object):

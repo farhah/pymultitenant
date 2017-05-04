@@ -201,9 +201,12 @@ class ConnectLDAP(object):
 
                 if not authenticated.user.is_active:
                     return False
+
                 setattr(self, 'auth_user', authenticated)
                 msg = 'Successful authentication'
+
                 return authenticated, msg
+
         except Exception as e:
             return (False, e)
 

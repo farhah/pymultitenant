@@ -15,8 +15,9 @@ def prepare_user(attrs):
         attrs = attrs[0]
 
     dn = attrs['dn']
+    groups = attrs['groups']
     attrs['attributes']['dn'] = dn
-
+    attrs['attributes']['groups'] = groups
     return attrs['attributes']
 
 
