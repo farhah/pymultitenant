@@ -1,5 +1,5 @@
-from authenticatedUser import authenticated
-from baseOperation import BaseOperation
+from multitenant.authenticatedUser import authenticated
+from multitenant.baseOperation import BaseOperation
 
 
 class RequestedUser(BaseOperation):

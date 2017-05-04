@@ -1,6 +1,6 @@
-from utils import get_app_dn
-from groups import objectify_group
-from settings import multitenant_settings as settings
+from multitenant.utils import get_app_dn
+from multitenant.groups import objectify_group
+from multitenant.settings import multitenant_settings as settings
 
 
 def get_user_group(user_dn, search_func, search_base):

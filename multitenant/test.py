@@ -1,5 +1,5 @@
-from auth import auth
-from operation import UserOperation, UserProfile
+from multitenant.auth import auth
+from multitenant.operation import UserOperation, UserProfile
 
 
 # authenticated = auth('iduser=farhah_email_empID,ou=users,applicationUUID=c2e3850d-882d-5273-80e5-6b2b5f7f622d,email=mom13@momo.com,ou=container,ou=multitenant,dc=ldapserver,dc=io', 'mypassword')

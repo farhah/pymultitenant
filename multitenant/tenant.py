@@ -1,6 +1,6 @@
-from auth import auth
-from settings import MultitenantSettings as settings
-from ldap3 import MODIFY_REPLACE, MODIFY_ADD, MODIFY_DELETE
+from multitenant.auth import auth
+from multitenant.settings import MultitenantSettings as settings
+from multitenant.ldap3 import MODIFY_REPLACE, MODIFY_ADD, MODIFY_DELETE
 
 
 class Tenant(object):

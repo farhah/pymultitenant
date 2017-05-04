@@ -1,10 +1,10 @@
 from __future__ import unicode_literals
-from settings import multitenant_settings as settings
+from multitenant.settings import multitenant_settings as settings
 from ldap3 import Server, Connection, Tls, AUTO_BIND_TLS_BEFORE_BIND, AUTO_BIND_NO_TLS, REUSABLE, ALL
 import ssl
-from authenticatedUser import authenticated
+from multitenant.authenticatedUser import authenticated
 from contextlib import contextmanager
-import utils
+import multitenant.utils
 
 import logging
 from ldap3.utils.log import set_library_log_detail_level, EXTENDED

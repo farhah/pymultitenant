@@ -1,7 +1,7 @@
-from connect import ldap
-from users import objectify_user
-from settings import multitenant_settings as settings
-from validation import bad_request
+from multitenant.connect import ldap
+from multitenant.users import objectify_user
+from multitenant.settings import multitenant_settings as settings
+from multitenant.validation import bad_request
 
 
 def auth(user, password):

@@ -1,7 +1,7 @@
-from settings import multitenant_settings as settings
-from connect import ldap
-import validation
-from utils import get_app_dn, is_within_app_dn
+from multitenant.settings import multitenant_settings as settings
+from multitenant.connect import ldap
+import multitenant.validation
+from multitenant.utils import get_app_dn, is_within_app_dn
 
 
 class Operation(object):

@@ -1,8 +1,8 @@
-from baseOperation import BaseOperation
-from decorators import authenticate, authorize
-from users import list_users, objectify_group, objectify_user
-from settings import multitenant_settings as settings
-from authenticatedUser import authenticated
+from multitenant.baseOperation import BaseOperation
+from multitenant.decorators import authenticate, authorize
+from multitenant.users import list_users, objectify_group, objectify_user
+from multitenant.settings import multitenant_settings as settings
+from multitenant.authenticatedUser import authenticated
 from ldap3 import MODIFY_REPLACE
 
 
