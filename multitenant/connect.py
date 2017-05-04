@@ -4,7 +4,7 @@ from ldap3 import Server, Connection, Tls, AUTO_BIND_TLS_BEFORE_BIND, AUTO_BIND_
 import ssl
 from multitenant.authenticatedUser import authenticated
 from contextlib import contextmanager
-import multitenant.utils
+from multitenant import utils
 
 import logging
 from ldap3.utils.log import set_library_log_detail_level, EXTENDED
