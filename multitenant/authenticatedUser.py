@@ -1,6 +1,6 @@
-from users import UserDescriptor, prepare_user
-from settings import multitenant_settings as settings
-from groups import list_groups
+from multitenant.users import UserDescriptor, prepare_user
+from multitenant.settings import multitenant_settings as settings
+from multitenant.groups import list_groups
 
 
 class AuthenticatedUser(UserDescriptor):
