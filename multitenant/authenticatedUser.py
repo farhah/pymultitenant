@@ -1,12 +1,13 @@
-from multitenant.users import UserDescriptor, prepare_user
-from multitenant.settings import multitenant_settings as settings
-from multitenant.groups import list_groups
+from users import UserDescriptor, prepare_user
+from settings import multitenant_settings as settings
+from groups import list_groups
 
 
 class AuthenticatedUser(UserDescriptor):
 
     def __init__(self, response):
         attrs = prepare_user(response)
+        print(attrs)
         super(AuthenticatedUser, self).__init__(attrs)
         self.__groups = None
         # server_conn, bind = server()
@@ -34,6 +35,15 @@ class AuthenticatedUser(UserDescriptor):
         return True
 
     @property
+    def is_root(self):
+        self.__is_root
+
+    @is_root.setter
+    def is_root(self, root=None):
+        self.__is_root = root
+        return self.__is_root
+
+    @property
     def groups(self):
         return self.__groups
 
@@ -52,7 +62,7 @@ class AuthenticatedUser(UserDescriptor):
         """
         at user creation lower groups are automatically assigned to user.
         if admin, automatically has marketer and pointattendent
-        if superuser, has admin, marketer, pointattendent
+        if superuser, has admin
         if root has all.
         :param group_name: a str of group name
         :return:

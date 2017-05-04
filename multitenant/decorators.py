@@ -1,5 +1,5 @@
-from multitenant.utils import get_app_uuid
-from multitenant.request import RequestedUser
+from utils import get_app_uuid
+from request import RequestedUser
 
 
 def authenticate(func):

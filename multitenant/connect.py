@@ -1,9 +1,10 @@
 from __future__ import unicode_literals
-from multitenant.settings import multitenant_settings as settings
-from ldap3 import Server, Connection, Tls, AUTO_BIND_TLS_BEFORE_BIND, AUTO_BIND_NO_TLS, LDAPException, REUSABLE, ALL
+from settings import multitenant_settings as settings
+from ldap3 import Server, Connection, Tls, AUTO_BIND_TLS_BEFORE_BIND, AUTO_BIND_NO_TLS, REUSABLE, ALL
 import ssl
-from multitenant.authenticatedUser import authenticated
+from authenticatedUser import authenticated
 from contextlib import contextmanager
+import utils
 
 import logging
 from ldap3.utils.log import set_library_log_detail_level, EXTENDED
@@ -123,15 +124,18 @@ class ConnectLDAP(object):
 
     @operation('add')
     def add(self, dn, object_class=None, attributes=None, controls=None):
+        ''' operation is passed to the operation decorator '''
         pass
 
     @operation('delete')
     def delete(self, dn, controls=None):
+        ''' operation is passed to the operation decorator '''
         if not getattr(self, 'auth_user'):
             raise Exception('User is not authenticated.')
 
     @operation('modify')
     def modify(self, dn, changes, controls=None):
+        ''' operation is passed to the operation decorator '''
         if not getattr(self, 'auth_user'):
             raise Exception('User is not authenticated.')
 
@@ -142,6 +146,7 @@ class ConnectLDAP(object):
                   delete_old_dn=True,
                   new_superior=None,
                   controls=None):
+        ''' operation is passed to the operation decorator '''
         if not getattr(self, 'auth_user'):
             raise Exception('User is not authenticated.')
 
@@ -160,6 +165,7 @@ class ConnectLDAP(object):
                paged_size=None,
                paged_criticality=False,
                paged_cookie=None):
+        ''' operation is passed to the operation decorator '''
         # test = getattr(self, 'auth_user', None)
         # print('4 --> {}'.format(test.user))
         # if not getattr(self, 'auth_user'):
@@ -167,49 +173,39 @@ class ConnectLDAP(object):
         pass
 
     def auth(self, user=None, password=None):
-
-        def is_root(whoami):
-            if whoami.startswith('uid'):
-                return False
-            return True
-
         server_conn, bind_conn = ConnectLDAP.server()
 
-        with Connection(server_conn, user, password, auto_bind=bind_conn) as conn:
-            whoami = conn.extend.standard.who_am_i()
-
-            if not whoami:
-                return None
-            whoami = whoami.split('dn:')[1]
-
-            user_type = is_root(whoami)
-            if user_type:
-                email = whoami.split(',')[0].partition('email=')[-1]
-                search_filter = '(&(objectClass=' + settings.multitenantRootUserDescriptor + ')(email=' + email + '))'
+        try:
+            with Connection(server_conn, user, password, auto_bind=bind_conn) as conn:
+                whoami = conn.extend.standard.who_am_i()
+                whoami = whoami.split('dn:')[1]
+                email = whoami.split(',')[0].partition('iduser=')[-1]
+                search_filter = '(&(objectClass=' + settings.multitenantUserDescriptor + ')(iduser=' + email + '))'
                 conn.search(whoami, search_filter, attributes=['*'])
-                authenticated.user = conn.response
-                authenticated.user.groups = 'all'
+                user_data = conn.response[0]
+                app_dn = utils.get_app_dn(user_data['dn'])
+
+                search_filter_root = '(memberof=cn=root,ou=groups,' + app_dn + ')'
+                search_filter_superuser = '(memberof=cn=superuser,ou=groups,' + app_dn + ')'
+
+                groups = []
+                conn.search(whoami, search_filter_root)
+                if conn.response:
+                    groups.append('root')
+                conn.search(whoami, search_filter_superuser)
+                if conn.response:
+                    groups.append('superuser')
+
+                user_data['groups'] = groups
+                authenticated.user = user_data
+
                 if not authenticated.user.is_active:
                     return False
                 setattr(self, 'auth_user', authenticated)
-                return authenticated
-
-        with Connection(server_conn, settings.ADMINISTRATOR, settings.PASSWORD, auto_bind=bind_conn) as conn:
-            app_dn = 'applicationUUID' + whoami.partition('applicationUUID')[-1]
-            uid = whoami.split(',')[0].partition('uid=')[-1]
-            search_filter = '(&(objectClass=' + settings.multitenantUserDescriptor + ')(uid=' + uid + '))'
-            conn.search(app_dn, search_filter, attributes=['*'])
-            authenticated.user = conn.response
-            print(dir(authenticated))
-            if not authenticated.user.is_active:
-                return False
-
-            search_filter_group = '(&(objectClass=groupOfNames)(member=' + whoami + '))'
-            conn.search(app_dn, search_filter_group, attributes=['*'])
-            authenticated.user.groups = conn.response
-
-            setattr(self, 'auth_user', authenticated)
-            return authenticated
+                msg = 'Successful authentication'
+                return authenticated, msg
+        except Exception as e:
+            return (False, e)
 
     def logout(self, conn):
         conn.unbind()

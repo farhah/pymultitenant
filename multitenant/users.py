@@ -1,6 +1,6 @@
-from multitenant.utils import get_app_dn
-from multitenant.groups import objectify_group
-from multitenant.settings import multitenant_settings as settings
+from utils import get_app_dn
+from groups import objectify_group
+from settings import multitenant_settings as settings
 
 
 def get_user_group(user_dn, search_func, search_base):
@@ -89,7 +89,7 @@ class UserDescriptor(object):
 
     @property
     def uid(self):
-        return self.__attrs['uid']
+        return self.__attrs['iduser']
 
     @property
     def uuid(self):

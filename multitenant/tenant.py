@@ -1,5 +1,5 @@
-from multitenant.auth import auth
-from multitenant.settings import MultitenantSettings as settings
+from auth import auth
+from settings import MultitenantSettings as settings
 from ldap3 import MODIFY_REPLACE, MODIFY_ADD, MODIFY_DELETE
 
 

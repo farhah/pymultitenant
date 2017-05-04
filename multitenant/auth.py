@@ -1,12 +1,14 @@
-from multitenant.connect import ldap
-from multitenant.users import objectify_user
-from multitenant.settings import multitenant_settings as settings
+from connect import ldap
+from users import objectify_user
+from settings import multitenant_settings as settings
+from validation import bad_request
 
 
 def auth(user, password):
-    auth_user = ldap.auth(user=user, password=password)
+    auth_user, msg = ldap.auth(user=user, password=password)
     if not auth_user:
-        raise Exception('Connection is unsuccessful. Username or password is incorrect.')
+        bad = bad_request(msg=msg)
+        return bad
     return auth_user
 
 
