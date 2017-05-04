@@ -10,4 +10,4 @@ add: olcAccess
 olcAccess: {2}to dn.regex="(.+,)?(email=[^,]+,ou=container,ou=multitenant,dc=ldapserver,dc=io)$" by dn.exact,expand="$2" write by dn="cn=admin,dc=ldapserver,dc=io" write by * none
 -
 add: olcAccess
-olcAccess: {3}to dn.regex="(.+,)?(applicationUUID=[^,]+,ou=container,ou=multitenant,dc=ldapserver,dc=io)$" by group.expand="cn=root,ou=groups,$1" write by dn="cn=admin,dc=ldapserver,dc=io" write by * none
+olcAccess: {3}to dn.regex="(.+,)?(applicationUUID=[^,]+,ou=container,ou=multitenant,dc=ldapserver,dc=io)$" by group.expand="(.+,)?cn=root,ou=groups,$1" write by dn="cn=admin,dc=ldapserver,dc=io" write by * none
