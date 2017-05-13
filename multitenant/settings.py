@@ -2,18 +2,24 @@ from __future__ import unicode_literals
 
 
 LDAP_SETTINGS = {
+    # 'LDAP_SERVER': 'ldap.ldapserver.io',
+    # 'PORT': 389,
+    # 'TLS': True,
+    # 'LOCAL_PRIVATE_KEY_FILE': '/Users/farhah/Documents/vagrant_ldapserver/certs/ldap_server.key',
+    # 'LOCAL_CERTIFICATE_KEY_FILE': '/Users/farhah/Documents/vagrant_ldapserver/certs/ldap_server.pem',
+    # 'CA_CERTS_FILE': '/Users/farhah/Documents/vagrant_ldapserver/certs/ca_server.pem',
     'LDAP_SERVER': 'ldap.ldapserver.io',
     'PORT': 389,
     'TLS': True,
-    'LOCAL_PRIVATE_KEY_FILE': '/Users/farhah/Documents/vagrant_ldapserver/certs/ldap_server.key',
-    'LOCAL_CERTIFICATE_KEY_FILE': '/Users/farhah/Documents/vagrant_ldapserver/certs/ldap_server.pem',
-    'CA_CERTS_FILE': '/Users/farhah/Documents/vagrant_ldapserver/certs/ca_server.pem',
+    'LOCAL_PRIVATE_KEY_FILE': '/vagrant/src/git/pymultitenant/ldap_server.key',
+    'LOCAL_CERTIFICATE_KEY_FILE': '/vagrant/src/git/pymultitenant/ldap_server.pem',
+    'CA_CERTS_FILE': '/vagrant/src/git/pymultitenant/ca_server.pem',
     'BASE_DC': 'dc=ldapserver,dc=io',
     'ORGANIZATION': 'ou=multitenant,dc=ldapserver,dc=io',
     'CONTAINER': 'ou=container,ou=multitenant,dc=ldapserver,dc=io',
     'ADMINISTRATOR': 'cn=admin,dc=ldapserver,dc=io',
     'PASSWORD': 'admin123',
-    'TENANT_GROUPS': ['root', 'superuser', 'admin', 'supervisor', 'user']
+    'TENANT_GROUPS': ['root', 'superuser']
 }
 
 OBJCLASS = [

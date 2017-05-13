@@ -22,5 +22,5 @@ print('------11111111')
 # z = UserProfile()
 # a = z.edit_uid('nanas')
 
-authenticated = auth('iduser=momo@momo.com,ou=people,applicationUUID=074eb119-b954-5c6b-94eb-0ad3898e6ff0,ou=container,ou=multitenant,dc=ldapserver,dc=io', 'admin123')
-print(authenticated)
+authenticated = auth('iduser=mo@momo.com,ou=people,applicationUUID=4424b661-6adf-512d-87f2-401e32248142,ou=container,ou=multitenant,dc=ldapserver,dc=io', 'admin123')
+print(authenticated.user.groups)

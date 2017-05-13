@@ -1,12 +1,12 @@
 from multitenant.utils import get_app_dn
-from multitenant.groups import objectify_group
+from multitenant.groups import objectify_group, list_groups
 from multitenant.settings import multitenant_settings as settings
 
 
 def get_user_group(user_dn, search_func, search_base):
     search_filter = '(&(objectClass=' + settings.groupOfNames + ')(member=' + user_dn + '))'
     data = search_func(search_base, search_filter)
-    groups = objectify_group(data['response'][0])
+    groups = list_groups(data['response'])
     return groups
 
 

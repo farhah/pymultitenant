@@ -19,11 +19,13 @@ def list_groups(attrs_dict):
 class GroupDescriptorMembers(object):
 
     def __init__(self, attrs):
+        if attrs is None:
+            return None
         self.attrs = attrs
-
-    @property
-    def members(self):
-        return self.attrs['member']
+    #
+    # @property
+    # def members(self):
+    #     return self.attrs['member']
 
 
 class GroupDescriptor(GroupDescriptorMembers):

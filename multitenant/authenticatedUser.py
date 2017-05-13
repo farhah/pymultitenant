@@ -34,41 +34,16 @@ class AuthenticatedUser(UserDescriptor):
 
     @property
     def is_root(self):
-        if 'root' in self.groups:
-            return True
+        for item in self.groups:
+            if 'root' == item.name:
+                return True
         return False
 
-    #
-    # @property
-    # def groups(self):
-    #     return self.groups
-    #
-    # @groups.setter
-    # def groups(self, group_attrs=None):
-    #     # if self.is_owner:
-    #     #     self.__groups = settings.TENANT_GROUPS
-    #
-    #     # else:
-    #     #     if group_attrs is None:
-    #     #         raise Exception('Group attributes is empty.')
-    #     #     groups = list_groups(group_attrs)
-    #     #     self.__groups = groups
-    #     pass
-
     def has_group(self, group_name):
-        # """
-        # at user creation lower groups are automatically assigned to user.
-        # if admin, automatically has
-        # if superuser, has admin
-        # if root has all.
-        # :param group_name: a str of group name
-        # :return:
-        # """
-        # for group in self.groups:
-        #     if group.name == group_name:
-        #         return True
-        # return False
-        pass
+        for item in self.groups:
+            if group_name == item.name:
+                return True
+        return False
 
 
 class Authenticated(object):

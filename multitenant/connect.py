@@ -5,6 +5,7 @@ import ssl
 from multitenant.authenticatedUser import authenticated
 from contextlib import contextmanager
 from multitenant import utils
+from multitenant.groups import list_groups
 
 import logging
 from ldap3.utils.log import set_library_log_detail_level, EXTENDED
@@ -166,10 +167,8 @@ class ConnectLDAP(object):
                paged_criticality=False,
                paged_cookie=None):
         ''' operation is passed to the operation decorator '''
-        # test = getattr(self, 'auth_user', None)
-        # print('4 --> {}'.format(test.user))
-        # if not getattr(self, 'auth_user'):
-        #     raise Exception('User is not authenticated.')
+        if not getattr(self, 'auth_user'):
+            raise Exception('User is not authenticated.')
         pass
 
     def auth(self, user=None, password=None):
@@ -177,26 +176,34 @@ class ConnectLDAP(object):
 
         try:
             with Connection(server_conn, user, password, auto_bind=bind_conn) as conn:
-                whoami = conn.extend.standard.who_am_i()
-                whoami = whoami.split('dn:')[1]
+                whoami = conn.extend.standard.who_am_i().split('dn:')[1]
                 email = whoami.split(',')[0].partition('iduser=')[-1]
                 search_filter = '(&(objectClass=' + settings.multitenantUserDescriptor + ')(iduser=' + email + '))'
+
                 conn.search(whoami, search_filter, attributes=['*'])
                 user_data = conn.response[0]
                 app_dn = utils.get_app_dn(user_data['dn'])
 
-                search_filter_root = '(memberof=cn=root,ou=groups,' + app_dn + ')'
-                search_filter_superuser = '(memberof=cn=superuser,ou=groups,' + app_dn + ')'
+                # search_filter_root = '(memberof=cn=root,ou=groups,' + app_dn + ')'
+                # search_filter_superuser = '(memberof=cn=superuser,ou=groups,' + app_dn + ')'
+                #
+                # groups = []
+                # conn.search(whoami, search_filter_root)
+                # print(conn.response)
+                # if conn.response:
+                #     groups.append('root')
+                # conn.search(whoami, search_filter_superuser)
+                # if conn.response:
+                #     groups.append('superuser')
+                #
+                # user_data['groups'] = groups
 
-                groups = []
-                conn.search(whoami, search_filter_root)
-                if conn.response:
-                    groups.append('root')
-                conn.search(whoami, search_filter_superuser)
-                if conn.response:
-                    groups.append('superuser')
-
-                user_data['groups'] = groups
+                # group_filter = '(&(objectClass=' + settings.groupOfNames + ')(member=' + whoami + '))'
+                # conn.search(app_dn, group_filter)
+                # groups = self.get_groups(conn.response)
+                group_filter = '(&(objectClass=' + settings.groupOfNames + ')(member=' + whoami + '))'
+                conn.search(app_dn, group_filter)
+                user_data['groups'] = list_groups(conn.response)
                 authenticated.user = user_data
 
                 if not authenticated.user.is_active:
@@ -208,7 +215,7 @@ class ConnectLDAP(object):
                 return authenticated, msg
 
         except Exception as e:
-            return (False, e)
+            return False, e
 
     def logout(self, conn):
         conn.unbind()
