@@ -1,7 +1,7 @@
 from multitenant.settings import multitenant_settings as settings
 from multitenant.connect import ldap
-import multitenant.validation
-from multitenant.utils import get_app_dn, is_within_app_dn
+from multitenant import validation
+from multitenant.groups import list_groups
 
 
 class Operation(object):
@@ -24,7 +24,6 @@ class Operation(object):
 
     def modify_dn(self, *args, **kwargs):
         data = ldap.modify_dn(*args, **kwargs)
-        print(data)
         if data['result']['description'] != 'success':
             msg = data['result']['message']
             desc = data['result']['description']
@@ -52,18 +51,14 @@ class BaseOperation(Operation):
 
     """ return raw data """
 
-    def get_user(self, user_dn):
-        user = user_dn.split(',')[0].partition('uid=')[-1]
-        app_dn = get_app_dn(user_dn)
-        is_within_app_dn(user_dn, app_dn)
-        search_filter = '(&(objectClass=' + settings.multitenantUserDescriptor + ')(uid=' + user + '))'
+    def get_user(self, iduser, app_dn):
+        search_filter = '(&(objectClass=' + settings.multitenantUserDescriptor + ')(iduser=' + iduser + '))'
         data = self.search(app_dn, search_filter,
                            attributes=['*'])
-        return data
+        return data['response']
 
-    def get_user_groups(self, user_dn):
-        search_filter_group = '(&(objectClass=groupOfNames)(member=' + user_dn + '))'
-        app_dn = get_app_dn(user_dn)
-        is_within_app_dn(user_dn, app_dn)
-        data = ldap.search(app_dn, search_filter_group, attributes=['*'])
-        return data
+    def get_user_groups(self, whoami, app_dn):
+        search_filter = '(&(objectClass=' + settings.groupOfNames + ')(member=' + whoami + '))'
+        data = self.search(app_dn, search_filter)
+        groups = list_groups(data['response'])
+        return groups

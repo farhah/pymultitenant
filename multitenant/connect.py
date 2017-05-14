@@ -11,26 +11,6 @@ import logging
 from ldap3.utils.log import set_library_log_detail_level, EXTENDED
 
 
-# def tls():
-#     t = Tls(local_private_key_file=settings.LOCAL_PRIVATE_KEY_FILE,
-#             local_certificate_file=settings.LOCAL_CERTIFICATE_KEY_FILE,
-#             validate=ssl.CERT_REQUIRED, version=ssl.PROTOCOL_TLSv1,
-#             ca_certs_file=settings.CA_CERTS_FILE)
-#     return t
-#
-#
-# def server():
-#     tls_ = getattr(settings, 'TLS', None)
-#     if tls_:
-#         tls_ = tls()
-#         bind_conn = AUTO_BIND_TLS_BEFORE_BIND
-#     else:
-#         bind_conn = AUTO_BIND_NO_TLS
-#
-#     server_conn = Server(settings.LDAP_SERVER, settings.PORT, tls=tls_, get_info=ALL)
-#     return server_conn, bind_conn
-
-
 # @contextmanager
 # def connect_ldap(username, password):
 #     tls_ = getattr(settings, 'TLS', None)
@@ -61,28 +41,13 @@ def operation(op):
             if not op_:
                 raise Exception("Connection operation is not recognized: {}".format(op))
 
-            # with Connection(server_conn, settings.ADMINISTRATOR, settings.PASSWORD,
-            #                 auto_bind=bind, client_strategy=REUSABLE) as conn:
-            #     print(conn)
-            #     del kwargs['requested_user']
-            #     operation_ = getattr(conn, op_)
-            #     args = args[1:]  # remove self
-            #     # operation_(*args, **kwargs)
-            #     pool_counter = operation_(*args, **kwargs)
-            #     response, result = conn.get_response(pool_counter)
-            #     # response = conn.response
-            #     # result = conn.result
-            #     return {'response': response, 'result': result}
-
             conn = Connection(server_conn, settings.ADMINISTRATOR, settings.PASSWORD, auto_bind=bind)
-            # del kwargs['requested_user']
             operation_ = getattr(conn, op_)
             args = args[1:]  # remove self
             operation_(*args, **kwargs)
-            # pool_counter = operation_(*args, **kwargs)
-            # response, result = conn.get_response(pool_counter)
             response = conn.response
             result = conn.result
+            conn.unbind()
             return {'response': response, 'result': result}
 
         return wrapped_func
@@ -94,6 +59,7 @@ class ConnectLDAP(object):
     def __init__(self):
         logging.basicConfig(filename='client_application.log', level=logging.DEBUG)
         set_library_log_detail_level(EXTENDED)
+        self.__conn = None
 
         if not hasattr(self, 'auth_user'):
             print('-----no user is authenticated yet.-----')
@@ -211,14 +177,15 @@ class ConnectLDAP(object):
 
                 setattr(self, 'auth_user', authenticated)
                 msg = 'Successful authentication'
-
+                self.__conn = conn
                 return authenticated, msg
 
         except Exception as e:
             return False, e
 
-    def logout(self, conn):
-        conn.unbind()
+    def logout(self):
+        if self.__conn:
+            self.__conn.unbind()
 
 
 ldap = ConnectLDAP()

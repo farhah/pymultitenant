@@ -19,7 +19,7 @@ LDAP_SETTINGS = {
     'CONTAINER': 'ou=container,ou=multitenant,dc=ldapserver,dc=io',
     'ADMINISTRATOR': 'cn=admin,dc=ldapserver,dc=io',
     'PASSWORD': 'admin123',
-    'TENANT_GROUPS': ['root', 'superuser']
+    'TENANT_GROUPS': ['root', 'superuser', 'admin']
 }
 
 OBJCLASS = [

@@ -1,25 +1,54 @@
 from multitenant.baseOperation import BaseOperation
 from multitenant.decorators import authenticate, authorize
-from multitenant.users import list_users, objectify_group, objectify_user
 from multitenant.settings import multitenant_settings as settings
 from multitenant.authenticatedUser import authenticated
 from ldap3 import MODIFY_REPLACE
+from multitenant.groups import objectify_group
+from multitenant.utils import get_app_dn
+from multitenant.users import prepare_user, UserDescriptor
 
 
 class UserOperation(BaseOperation):
+
+    def objectify_user(self, attrs):
+        """
+        attrs of response either dict or list but with only len 1
+    
+        attrs = [{'raw_attrs': {}, 'attrs': {}, 'type': 'something'},
+                                     {'raw_attrs': {}, 'attrs': {}, 'type': 'something'}, ..]
+        :param attrs:
+        :return:
+        """
+        whoami = attrs['dn']
+        app_dn = get_app_dn(whoami)
+        groups = self.get_user_groups(whoami, app_dn)
+        attrs['groups'] = groups
+
+        attributes = prepare_user(attrs)
+
+        user = UserDescriptor(attributes)
+        return user
+
+    def list_users(self, attrs_dict):
+        users = list()
+        for attrs in attrs_dict:
+            user = self.objectify_user(attrs)
+            users.append(user)
+
+        return users
 
     @authorize(['admin', 'superuser', 'root'])
     def get_all_users(self, search_base):
         search_filter = '(objectClass=' + settings.multitenantUserDescriptor + ')'
         data = self.search(search_base, search_filter,
                            attributes=['*'])
-        users = list_users(data['response'], self.search)
+        users = self.list_users(data['response'])
         return users
 
     @authorize(['admin', 'superuser', 'root'])
     def get_one_user(self, user_dn):
         data = self.get_user(user_dn)
-        user = objectify_user(data['response'], self.search)
+        user = self.objectify_user(data['response'])
         return user
 
     @authorize(['admin', 'superuser', 'root'])

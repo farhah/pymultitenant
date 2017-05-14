@@ -1,10 +1,10 @@
 from multitenant.utils import get_app_uuid
-from multitenant.request import RequestedUser
+from multitenant.request import RequestUser
 
 
 def authenticate(func):
     def wrapper(*args, **kwargs):
-        with RequestedUser() as request:
+        with RequestUser() as request:
             if not request.user.dn:
                 raise Exception('User is not authenticated.')
         return func(*args, **kwargs)
@@ -14,10 +14,7 @@ def authenticate(func):
 def authorize(group):
     def wrapper(func):
         def wrapped_func(*args, **kwargs):
-            with RequestedUser() as request:
-                print('3 --> {}'.format(request.user))
-                if not request.user:
-                    raise Exception('User is not authenticated.')
+            with RequestUser() as request:
                 if isinstance(group, list):
                     for x in group:
                         if request.user.has_group(x):

@@ -2,7 +2,7 @@ from multitenant.authenticatedUser import authenticated
 from multitenant.baseOperation import BaseOperation
 
 
-class RequestedUser(BaseOperation):
+class RequestUser(BaseOperation):
 
     def __enter__(self):
         self.__user = None
@@ -15,13 +15,9 @@ class RequestedUser(BaseOperation):
         return self.__user
 
     def __set_user(self):
-        user_dn = authenticated.user.dn
-        print('1 --> {}'.format(authenticated.user))
-        raw_data = self.get_user(user_dn)
-        authenticated.user = raw_data['response']
-        raw_data_group = self.get_user_groups(user_dn)
-        authenticated.user.groups = raw_data_group['response']
-        print('2 --> {}'.format(authenticated.user))
+        raw_data = self.get_user(authenticated.user.iduser, authenticated.user.app_dn)[0]
+        raw_data['groups'] = self.get_user_groups(authenticated.user.whoami, authenticated.user.app_dn)
+        authenticated.user = raw_data
         self.__user = authenticated
         return self.__user
 

@@ -23,4 +23,9 @@ print('------11111111')
 # a = z.edit_uid('nanas')
 
 authenticated = auth('iduser=mo@momo.com,ou=people,applicationUUID=4424b661-6adf-512d-87f2-401e32248142,ou=container,ou=multitenant,dc=ldapserver,dc=io', 'admin123')
-print(authenticated.user.groups)
+
+user_op = UserOperation()
+a = user_op.get_all_users(authenticated.user.app_dn)
+print('------------------------------')
+for user in a:
+    print(user.iduser, user.groups)
